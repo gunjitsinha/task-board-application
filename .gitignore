@@ -1,0 +1,5 @@
+# Ignore Django SQLite database
+db.sqlite3
+
+# Ignore specific text file
+yourfile.txt
