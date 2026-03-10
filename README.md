@@ -16,7 +16,7 @@ Task Board is a lightweight full-stack web app for managing your to-do list. You
 
 Here's what the app looks like:
 
-![Task Board UI](Screenshots/frontend-ui.png)
+![Task Board UI](Screenshots/frontend-ui-cropped.png)
 
 Features visible in the UI:
 - Input field to add new tasks
