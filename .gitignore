@@ -2,4 +2,5 @@
 db.sqlite3
 
 # Ignore specific text file
-yourfile.txt
+problemstatement.txt 
+submission.txt 
