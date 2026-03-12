@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+/**
+ * App - Main task management application component
+ * Provides CRUD operations for tasks with error handling and loading states.
+ * Communicates with Django REST API backend at http://127.0.0.1:8000/tasks/
+ */
 function App() {
 
   const [tasks, setTasks] = useState([]);
@@ -20,6 +25,10 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  /**
+   * Converts ISO timestamp to human-readable relative time string
+   * Examples: "just now", "5mins ago", "2 days ago", "3mos ago"
+   */
   function formatTimeAgo(dateString) {
     const date = new Date(dateString);
     const now = new Date();
@@ -36,6 +45,10 @@ function App() {
     return `${months}mo${months !== 1 ? 's' : ''} ago`;
   }
 
+  /**
+   * Fetches all tasks from the backend API
+   * Sets loading state during request and handles errors gracefully
+   */
   async function fetchTasks() {
     try {
       setError("");
@@ -50,6 +63,11 @@ function App() {
     }
   }
 
+  /**
+   * Creates a new task on the backend
+   * Validates input is not empty before sending
+   * Clears input field on success
+   */
   async function addTask() {
     if (task.trim() === "") return;
 
@@ -70,6 +88,10 @@ function App() {
     }
   }
 
+  /**
+   * Deletes a task from the backend by ID
+   * Removes the deleted task from the UI state
+   */
   async function deleteTask(id) {
     try {
       setError("");
@@ -84,6 +106,10 @@ function App() {
     }
   }
 
+  /**
+   * Toggles a task's completion status between complete and incomplete
+   * Sends update to backend and reflects change in UI
+   */
   async function toggleComplete(taskObj) {
     const updatedStatus = taskObj.status ? false : true;
 
