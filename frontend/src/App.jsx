@@ -6,6 +6,8 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("");
   const [updateTrigger, setUpdateTrigger] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchTasks();
@@ -35,44 +37,73 @@ function App() {
   }
 
   async function fetchTasks() {
-    const res = await axios.get("http://127.0.0.1:8000/tasks/");
-    setTasks(res.data);
+    try {
+      setError("");
+      setLoading(true);
+      const res = await axios.get("http://127.0.0.1:8000/tasks/");
+      setTasks(res.data);
+    } catch (err) {
+      setError("Failed to fetch tasks. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function addTask() {
-
     if (task.trim() === "") return;
 
-    const res = await axios.post("http://127.0.0.1:8000/tasks/", {
-      taskname: task,
-      status: false
-    });
-
-    setTasks([...tasks, res.data]);
-
-    setTask("");
+    try {
+      setError("");
+      setLoading(true);
+      const res = await axios.post("http://127.0.0.1:8000/tasks/", {
+        taskname: task,
+        status: false
+      });
+      setTasks([...tasks, res.data]);
+      setTask("");
+    } catch (err) {
+      setError("Failed to add task. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function deleteTask(id) {
-
-    await axios.delete(`http://127.0.0.1:8000/tasks/${id}/`);
-
-    setTasks(tasks.filter(t => t.id !== id));
+    try {
+      setError("");
+      setLoading(true);
+      await axios.delete(`http://127.0.0.1:8000/tasks/${id}/`);
+      setTasks(tasks.filter(t => t.id !== id));
+    } catch (err) {
+      setError("Failed to delete task. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function toggleComplete(taskObj) {
-
     const updatedStatus = taskObj.status ? false : true;
 
-    const res = await axios.put(
-      `http://127.0.0.1:8000/tasks/${taskObj.id}/`,
-      {
-        taskname: taskObj.taskname,
-        status: updatedStatus
-      }
-    );
-
-    setTasks(tasks.map(t => t.id === taskObj.id ? res.data : t));
+    try {
+      setError("");
+      setLoading(true);
+      const res = await axios.put(
+        `http://127.0.0.1:8000/tasks/${taskObj.id}/`,
+        {
+          taskname: taskObj.taskname,
+          status: updatedStatus
+        }
+      );
+      setTasks(tasks.map(t => t.id === taskObj.id ? res.data : t));
+    } catch (err) {
+      setError("Failed to update task. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -84,6 +115,13 @@ function App() {
         <h1 className="text-3xl font-bold mb-6 text-white">
           Task Board
         </h1>
+
+        {/* Error display */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-900 border border-red-700 rounded text-red-100">
+            {error}
+          </div>
+        )}
 
         {/* Add task */}
 
@@ -99,9 +137,10 @@ function App() {
 
           <button
             onClick={addTask}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded transition"
           >
-            Add
+            {loading ? "Loading..." : "Add"}
           </button>
 
         </div>
@@ -144,8 +183,9 @@ function App() {
 
                   <input
                     type="checkbox"
-                    className="w-5 h-5 accent-blue-500"
+                    className="w-5 h-5 accent-blue-500 disabled:cursor-not-allowed"
                     checked={t.status}
+                    disabled={loading}
                     onChange={() => toggleComplete(t)}
                   />
 
@@ -162,10 +202,11 @@ function App() {
 
                   <button
                     onClick={() => deleteTask(t.id)}
-                    className="text-red-400 hover:text-red-500 transition"
-                    >
-                      Delete
-                    </button>
+                    disabled={loading}
+                    className="text-red-400 hover:text-red-500 disabled:text-gray-600 disabled:cursor-not-allowed transition"
+                  >
+                    Delete
+                  </button>
                 </div>
 
               </div>

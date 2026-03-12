@@ -4,3 +4,6 @@ db.sqlite3
 # Ignore specific text file
 problemstatement.txt 
 submission.txt 
+
+backend/config/__pycache__
+backend/tasks/__pycache__
